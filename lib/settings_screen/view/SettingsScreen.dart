@@ -1,8 +1,8 @@
 import 'package:antigai/settings_screen/widgets/settings_item.dart';
-import 'package:antigai/settings_screen/widgets/sound_accompaniment_panel.dart';
-import 'package:antigai/settings_ screen/widgets/sound_accompaniment_panel_item.dart';
+import 'package:antigai/settings_screen/widgets/sound_accompaniment_panel_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../bloc/sounds_accompanation/sound_accompanation_cubit.dart';
 import '../../bloc/sounds_accompanation/sound_accompanation_state.dart';
@@ -11,11 +11,16 @@ import '../../bloc/settings_show_bottom_sheet/show_bottom_sheet_state.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
-  Widget _buildContentSettingItem(state) {
+  Widget _buildContentSettingItem(state, context) {
     ///Создаётся контент для страницы настроек
     if (state is RegistrationState) {
-      return Container(
-        padding: EdgeInsets.only(left: 15),
+      return Padding(
+        padding: EdgeInsets.only(
+          left: 15,
+          bottom: MediaQuery.of(context).viewInsets.bottom != 0
+              ? MediaQuery.of(context).viewInsets.bottom
+              : 0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,8 +68,11 @@ class SettingsScreen extends StatelessWidget {
       );
     } else if (state is FeedbackState) {
       return Padding(
-        padding: const EdgeInsets.only(
+        padding: EdgeInsets.only(
           left: 15,
+          bottom: MediaQuery.of(context).viewInsets.bottom != 0
+              ? MediaQuery.of(context).viewInsets.bottom
+              : 0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,36 +82,44 @@ class SettingsScreen extends StatelessWidget {
               height: 15,
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.only(right: 10, top: 10),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
                   border: Border.all(
-                    width: 6,
+                    width: 4,
                     color: Color.fromRGBO(25, 25, 25, 1),
                   ),
                   boxShadow: [],
                   color: Color.fromRGBO(49, 49, 49, 1),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: EdgeInsets.only(),
                   child: TextField(
                     style: TextStyle(
                       color: Colors.white,
                     ),
                     decoration: InputDecoration(
-                        focusColor: Colors.amber,
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromRGBO(49, 49, 49, 1),
+                          ),
+                        ),
+                        contentPadding: EdgeInsets.only(
+                          top: 15,
+                          left: 15,
+                        ),
                         suffixStyle: TextStyle(
                           color: Colors.white,
                         ),
                         labelStyle: TextStyle(
                           color: Colors.white,
                         ),
-                        hintText: '   Сообщение',
+                        hintText: 'Сообщение',
                         hintStyle: TextStyle(
                           color: Colors.white,
                         )),
-                    maxLines: 10,
+                    maxLines: 9,
                     minLines: 7,
                   ),
                 ),
@@ -117,7 +133,7 @@ class SettingsScreen extends StatelessWidget {
               height: 50,
               width: double.infinity,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.only(top: 5),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -127,10 +143,13 @@ class SettingsScreen extends StatelessWidget {
                   onPressed: () {},
                   child: Text(
                     'Отправить',
-                    style: TextStyle(fontSize: 15),
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
               ),
+            ),
+            SizedBox(
+              height: 20,
             )
           ],
         ),
@@ -152,11 +171,84 @@ class SettingsScreen extends StatelessWidget {
             create: (_) => SoundAccompanimentCubit(),
             child:
                 BlocBuilder<SoundAccompanimentCubit, SoundsAccompanationState>(
-              builder: (context, state) =>
-
-                  /// Панель с выбором звукового сопровождения
-                  sound_accompaniment_panel(context, state),
-            ),
+                    builder: (context, state) {
+              /// Панель с выбором звукового сопровождения
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 24),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                      color: Color.fromRGBO(33, 33, 33, 1),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildSoundUItem(
+                          state,
+                          SvgPicture.asset('assets/icons/sounds_mute.svg'),
+                          () => context
+                              .read<SoundAccompanimentCubit>()
+                              .changeMute(),
+                          (state is MuteState)
+                              ? Color.fromRGBO(49, 49, 49, 1)
+                              : Color.fromRGBO(33, 33, 33, 1),
+                        ),
+                        buildSoundUItem(
+                          state,
+                          SvgPicture.asset('assets/icons/sounds_vibration.svg'),
+                          () => context
+                              .read<SoundAccompanimentCubit>()
+                              .changeVibration(),
+                          (state is VibrationState)
+                              ? Color.fromRGBO(49, 49, 49, 1)
+                              : Color.fromRGBO(33, 33, 33, 1),
+                        ),
+                        buildSoundUItem(
+                          state,
+                          SvgPicture.asset('assets/icons/sounds_sound.svg'),
+                          () => context
+                              .read<SoundAccompanimentCubit>()
+                              .changeSound(),
+                          (state is SoundState)
+                              ? Color.fromRGBO(49, 49, 49, 1)
+                              : Color.fromRGBO(33, 33, 33, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  if (state is SoundState)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Text('Все звуки включены'),
+                    ),
+                  if (state is VibrationState)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Text(
+                          'Включены уведомления о камерах и \nдорожных событиях'),
+                    ),
+                  if (state is MuteState)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Text('Выключены все звуки'),
+                    ),
+                ],
+              );
+              ;
+            }),
           ),
           SizedBox(
             height: 30,
@@ -209,18 +301,19 @@ class SettingsScreen extends StatelessWidget {
 
   void _startChangeSettings(BuildContext ctx, ShowBottomSheetState state) {
     showModalBottomSheet(
+        isDismissible: false,
+        isScrollControlled: true,
         context: ctx,
         builder: (_) {
-          return GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(18, 18, 18, 1),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(15),
-                ),
+          return Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(18, 18, 18, 1),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(15),
               ),
+            ),
+            child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.all(0),
                 child: Column(
@@ -230,7 +323,10 @@ class SettingsScreen extends StatelessWidget {
                     SizedBox(
                       height: 30,
                     ),
-                    _buildContentSettingItem(state),
+                    _buildContentSettingItem(state, ctx),
+                    SizedBox(
+                      height: 30,
+                    ),
                   ],
                 ),
               ),
@@ -272,11 +368,13 @@ class SettingsScreen extends StatelessWidget {
               SizedBox(
                 height: 10,
               ),
-              buildSettingsItem(
-                'Регистрация',
-                () => context
-                    .read<ShowBottomSheetCubit>()
-                    .showBottomSheetRegistration(),
+              SizedBox(
+                child: buildSettingsItem(
+                  'Регистрация',
+                  () => context
+                      .read<ShowBottomSheetCubit>()
+                      .showBottomSheetRegistration(),
+                ),
               ),
               // buildSettingsItem(
               //   'Отключить рекламу',
