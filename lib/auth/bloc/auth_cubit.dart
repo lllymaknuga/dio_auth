@@ -5,15 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Cubit<AuthState> {
   AuthBloc() : super(const AuthState(status: Status.init));
-  final DioClient _dio = DioClient();
-
-  void changeEmail(String text) {
-    emit(state.copyWith(email: text));
-  }
-
-  void changePasswrod(String text) {
-    emit(state.copyWith(password: text));
-  }
+  final ApiClient _dio = ApiClient();
 
   Future<void> authorization() async {
     // ignore: avoid_print

@@ -11,8 +11,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: BlocProvider(
-        create: (_) => NavigationCubit(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => NavigationCubit()),
+        ],
         child: HomePage(),
       ),
       theme: ThemeData(
