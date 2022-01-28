@@ -17,8 +17,6 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
         target: LatLng(54.72822382690697, 55.96038932418227),
         zoom: 11.4,
       ),
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
     );
   }
 }
